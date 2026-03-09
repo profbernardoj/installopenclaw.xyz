@@ -2,6 +2,25 @@
 
 All notable changes to EverClaw are documented here.
 
+## [2026.3.9] - 2026-03-08
+
+### Changed
+- **Bagman upgraded to v2.0 Multi-Backend**
+  - Full sync from `zscole/bagman-skill` upstream
+  - NEW: macOS Keychain backend (zero setup, native)
+  - NEW: Encrypted file backend via `age` (portable, git-friendly)
+  - NEW: Environment variables backend (CI/CD, containers)
+  - NEW: Auto-detect best available backend (no 1Password required)
+  - NEW: Python examples — secret_manager, sanitizer, validator, session_keys, test_suite
+  - NEW: Backend implementations — keychain, encrypted_file, env, onepassword, auto
+  - NEW: Autonomous operation documentation
+  - NEW: Delegation Framework integration tests (TypeScript)
+  - NEW: BIP-39 wordlist for key validation
+  - NEW: Pre-commit hook for secret leak prevention
+  - Upstream: https://github.com/zscole/bagman-skill
+
+---
+
 ## [2026.3.8] - 2026-03-08
 
 ### Changed

@@ -1685,14 +1685,24 @@ python3 -c "from prompt_guard import PromptGuard; pg = PromptGuard(); print(pg.a
 
 Full docs: `security/prompt-guard/SKILL.md`
 
-### 💰 Bagman — Secure Key Management
+### 💰 Bagman — Secure Key Management (v2.0 Multi-Backend)
 
-Secure key management for AI agents handling private keys, API secrets, and wallet credentials. Covers secure storage patterns, session keys, leak prevention, prompt injection defense specific to financial operations, and MetaMask Delegation Framework (EIP-7710) integration.
+Secure key management for AI agents handling private keys, API secrets, and wallet credentials. Multi-backend support with auto-detection — **no 1Password required**.
+
+**Supported backends:**
+
+| Backend | Setup | Best For |
+|---------|-------|----------|
+| macOS Keychain | None (native) | macOS, zero setup |
+| 1Password CLI | `brew install 1password-cli` | Teams, rich metadata |
+| Encrypted File | `brew install age` | Portable, git-friendly |
+| Environment Vars | None | CI/CD, containers |
 
 **Key principles:**
-- **Never store keys on disk** — use 1Password `op run` for runtime injection
+- **Never store raw private keys** — use a secure backend
+- **Auto-detect backend** — Bagman picks the best available option
 - **Session keys** — generate ephemeral keys with limited permissions
-- **Delegation Framework** — grant agents scoped authority without exposing master keys
+- **Delegation Framework** — grant agents scoped authority via EIP-7710
 - **Leak prevention** — patterns to detect and block secret exposure
 
 **Reference docs:**
@@ -1701,6 +1711,14 @@ Secure key management for AI agents handling private keys, API secrets, and wall
 - `security/bagman/references/delegation-framework.md` — EIP-7710 integration
 - `security/bagman/references/leak-prevention.md` — Leak detection rules
 - `security/bagman/references/prompt-injection-defense.md` — Financial-specific injection defense
+- `security/bagman/references/autonomous-operation.md` — Autonomous-first operation mode
+
+**Examples:**
+- `security/bagman/examples/secret_manager.py` — Unified secret manager
+- `security/bagman/examples/backends/` — Backend implementations
+- `security/bagman/examples/sanitizer.py` — Output sanitization
+- `security/bagman/examples/validator.py` — Input validation (injection defense)
+- `security/bagman/examples/session_keys.py` — ERC-4337 session key config
 
 **When to use:** Whenever an agent handles private keys, wallet credentials, or API secrets — which Everclaw agents always do.
 
@@ -1713,7 +1731,7 @@ For Everclaw agents handling MOR tokens:
 1. **Before installing any new skill:** Run SkillGuard scan
 2. **After setup and periodically:** Run ClawdStrike audit
 3. **In group chats or with untrusted input:** Enable PromptGuard detection
-4. **Always:** Follow Bagman patterns for key management (1Password, session keys, no keys on disk)
+4. **Always:** Follow Bagman patterns for key management (auto-detect backend, session keys)
 
 ---
 
