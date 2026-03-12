@@ -34,10 +34,19 @@ const RPC_URL = process.env.EVERCLAW_RPC || "https://base-mainnet.public.blastap
 const MOR_TOKEN = "0x7431aDa8a591C955a994a21710752EF9b882b8e3";
 const MOR_BALANCE_THRESHOLD = parseFloat(process.env.MORPHEUS_MOR_THRESHOLD || "500"); // Alert below this
 const WALLET_ADDRESS = process.env.MORPHEUS_WALLET_ADDRESS || ""; // Router's wallet address for balance check
-const GATEWAY_API_KEY = process.env.MORPHEUS_GATEWAY_API_KEY || ""; // Gateway fallback API key
-const GATEWAY_BASE_URL = process.env.MORPHEUS_GATEWAY_URL || "https://api.mor.org/v1";
+const GATEWAY_URL = process.env.MORPHEUS_GATEWAY_URL || "https://api.mor.org/api/v1";
+const GATEWAY_API_KEY = process.env.MOR_GATEWAY_API_KEY || process.env.MORPHEUS_GATEWAY_API_KEY || "";
 const FALLBACK_THRESHOLD = parseInt(process.env.MORPHEUS_FALLBACK_THRESHOLD || "3", 10); // Failures before fallback
 const FALLBACK_RETRY_MS = parseInt(process.env.MORPHEUS_FALLBACK_RETRY_MS || "21600000", 10); // 6 hours
+
+// --- Gateway-only models (no P2P providers) ---
+// When a request comes in for one of these and it's not in MODEL_MAP
+// (i.e. no on-chain ID from the router), we forward directly to Gateway.
+const GATEWAY_ONLY_MODELS = new Set([
+  "glm-5",
+  "glm-5:web",
+  "MiniMax-M2.5",
+]);
 
 // --- Model ID map (blockchain model IDs) ---
 // Hardcoded defaults used as fallback if the router is unreachable at startup.
@@ -272,7 +281,9 @@ async function forwardToGateway(body, isStreaming, res) {
     throw new Error("Gateway API key not configured");
   }
 
-  const url = new URL("/chat/completions", GATEWAY_BASE_URL);
+  // Use string concat to preserve base path (e.g. /api/v1/chat/completions)
+  const base = GATEWAY_URL.replace(/\/+$/, "");
+  const url = new URL(`${base}/chat/completions`);
   const headers = {
     "Authorization": `Bearer ${GATEWAY_API_KEY}`,
     "Content-Type": "application/json",
@@ -447,11 +458,36 @@ async function handleChatCompletions(req, res, body) {
     return oaiError(res, 400, "Invalid JSON body", "invalid_request_error");
   }
 
-  const requestedModel = parsed.model || "kimi-k2.5";
+  const requestedModel = parsed.model || "glm-5";
   const modelId = resolveModelId(requestedModel);
+
+  // --- Gateway-only path: model not on P2P, forward to Morpheus API Gateway ---
+  if (!modelId && GATEWAY_ONLY_MODELS.has(requestedModel)) {
+    if (!GATEWAY_API_KEY) {
+      return oaiError(res, 502,
+        `Model "${requestedModel}" is gateway-only but no MOR_GATEWAY_API_KEY is configured`,
+        "server_error", "gateway_not_configured");
+    }
+    console.log(`[morpheus-proxy] Gateway-only model "${requestedModel}" — forwarding to ${GATEWAY_URL}`);
+    const isStreaming = parsed.stream === true;
+    try {
+      const result = await forwardToGateway(body, isStreaming, res);
+      if (result.streamed) return; // streaming already piped to res
+      res.writeHead(result.status, { "Content-Type": result.headers["content-type"] || "application/json" });
+      res.end(result.body);
+      return;
+    } catch (e) {
+      if (!res.headersSent) {
+        return oaiError(res, 502,
+          `Morpheus Gateway error for ${requestedModel}: ${e.message}`,
+          "server_error", "morpheus_gateway_error");
+      }
+    }
+  }
+
   if (!modelId) {
     return oaiError(res, 400,
-      `Unknown model: ${requestedModel}. Available: ${Object.keys(MODEL_MAP).join(", ")}`,
+      `Unknown model: ${requestedModel}. Available: ${[...Object.keys(MODEL_MAP), ...GATEWAY_ONLY_MODELS].join(", ")}`,
       "invalid_request_error", "model_not_found");
   }
 
@@ -640,14 +676,24 @@ async function handleChatCompletions(req, res, body) {
 }
 
 function handleModels(req, res) {
-  const models = Object.entries(MODEL_MAP).map(([name, id]) => ({
+  const now = Math.floor(Date.now() / 1000);
+  const p2pModels = Object.entries(MODEL_MAP).map(([name]) => ({
     id: name,
     object: "model",
-    created: Math.floor(Date.now() / 1000),
+    created: now,
     owned_by: "morpheus",
   }));
+  // Include gateway-only models that aren't already in MODEL_MAP
+  const gwModels = [...GATEWAY_ONLY_MODELS]
+    .filter((name) => !MODEL_MAP[name])
+    .map((name) => ({
+      id: name,
+      object: "model",
+      created: now,
+      owned_by: "morpheus-gateway",
+    }));
   res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ object: "list", data: models }));
+  res.end(JSON.stringify({ object: "list", data: [...p2pModels, ...gwModels] }));
 }
 
 function handleHealth(req, res) {
@@ -666,15 +712,17 @@ function handleHealth(req, res) {
   const health = {
     status: "ok",
     routerUrl: ROUTER_URL,
+    gatewayUrl: GATEWAY_URL,
+    gatewayConfigured: !!GATEWAY_API_KEY,
     activeSessions,
     availableModels: Object.keys(MODEL_MAP),
+    gatewayOnlyModels: [...GATEWAY_ONLY_MODELS].filter((m) => !MODEL_MAP[m]),
     morBalance: morBalance,
     morBalanceLastCheck: morBalanceLastCheck ? new Date(morBalanceLastCheck).toISOString() : null,
     morThreshold: MOR_BALANCE_THRESHOLD,
     fallbackMode,
     fallbackRemaining: fallbackMode ? Math.max(0, Math.floor((fallbackUntil - Date.now()) / 1000)) : 0,
     consecutiveFailures,
-    gatewayConfigured: !!GATEWAY_API_KEY,
   };
 
   res.writeHead(200, { "Content-Type": "application/json" });
@@ -741,7 +789,7 @@ server.listen(PROXY_PORT, PROXY_HOST, async () => {
   console.log(`[morpheus-proxy] Session duration: ${SESSION_DURATION}s, renew before: ${RENEW_BEFORE_SEC}s`);
   console.log(`[morpheus-proxy] MOR threshold: ${MOR_BALANCE_THRESHOLD}, fallback threshold: ${FALLBACK_THRESHOLD} failures`);
   if (GATEWAY_API_KEY) {
-    console.log(`[morpheus-proxy] Gateway fallback: configured (${GATEWAY_BASE_URL})`);
+    console.log(`[morpheus-proxy] Gateway fallback: configured (${GATEWAY_URL})`);
   } else {
     console.log(`[morpheus-proxy] Gateway fallback: not configured (set MORPHEUS_GATEWAY_API_KEY)`);
   }
