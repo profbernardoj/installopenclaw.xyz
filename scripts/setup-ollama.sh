@@ -559,6 +559,49 @@ pull_model() {
 
 # ─── Configure OpenClaw ─────────────────────────────────────────────────────────
 
+# ─── Ollama API Migration ────────────────────────────────────────────────────
+# Fixes: api: "openai-completions" → api: "ollama" in existing configs.
+# Without this fix, ollama requests may route through the previous provider's
+# HTTP client in the fallback chain instead of localhost:11434.
+# See: https://github.com/openclaw/openclaw/issues/45369
+
+migrate_ollama_api() {
+  local config="${1:-$OPENCLAW_CONFIG}"
+
+  if [[ -z "$config" ]] || [[ ! -f "$config" ]]; then
+    return 0
+  fi
+
+  # Check if ollama provider exists with wrong api type
+  local current_api
+  current_api=$(jq -r '.models.providers.ollama.api // ""' "$config" 2>/dev/null) || return 0
+
+  if [[ "$current_api" != "openai-completions" ]]; then
+    return 0  # Already correct or not configured
+  fi
+
+  log "Migrating ollama provider: api \"openai-completions\" → \"ollama\""
+
+  # Backup before migration
+  cp "$config" "${config}.bak.$(date +%s)"
+
+  # Fix provider-level api
+  local tmp_config
+  tmp_config=$(jq '.models.providers.ollama.api = "ollama"' "$config")
+
+  # Remove model-level api:"openai-completions" (let it inherit from provider)
+  tmp_config=$(echo "$tmp_config" | jq '
+    if .models.providers.ollama.models then
+      .models.providers.ollama.models |= map(
+        if .api == "openai-completions" then del(.api) else . end
+      )
+    else . end
+  ')
+
+  echo "$tmp_config" | jq '.' > "$config"
+  log_ok "Ollama API type migrated — fallback routing fixed"
+}
+
 configure_openclaw() {
   local model="$1"
 
@@ -567,6 +610,9 @@ configure_openclaw() {
     log "You can manually add the ollama provider to your openclaw.json"
     return 1
   fi
+
+  # Migrate existing ollama configs with wrong api type
+  migrate_ollama_api "$OPENCLAW_CONFIG"
 
   log "Configuring OpenClaw..."
 

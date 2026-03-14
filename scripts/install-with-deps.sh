@@ -612,6 +612,32 @@ else
   log "  Run manually: node $INSTALL_DIR/scripts/setup.mjs --apply --restart"
 fi
 
+# ─── Ollama API Migration ─────────────────────────────────────────
+# Fix existing configs where ollama has api:"openai-completions" instead
+# of api:"ollama". Without this, ollama requests may route through the
+# previous provider's HTTP client in the fallback chain.
+# See: https://github.com/openclaw/openclaw/issues/45369
+
+local_config="$HOME/.openclaw/openclaw.json"
+if [[ -f "$local_config" ]] && command -v jq &>/dev/null; then
+  ollama_api=$(jq -r '.models.providers.ollama.api // ""' "$local_config" 2>/dev/null) || ollama_api=""
+  if [[ "$ollama_api" == "openai-completions" ]]; then
+    log "Migrating ollama config: api \"openai-completions\" → \"ollama\"..."
+    cp "$local_config" "${local_config}.bak.$(date +%s)"
+    tmp_config=$(jq '
+      .models.providers.ollama.api = "ollama" |
+      if .models.providers.ollama.models then
+        .models.providers.ollama.models |= map(
+          if .api == "openai-completions" then del(.api) else . end
+        )
+      else . end
+    ' "$local_config")
+    echo "$tmp_config" | jq '.' > "$local_config" && \
+      log_ok "Ollama API type migrated — fallback routing fixed" || \
+      log_warn "Ollama migration failed (not fatal)"
+  fi
+fi
+
 echo ""
 
 # ─── Open Dashboard (best effort) ─────────────────────────────────

@@ -392,6 +392,28 @@ if (applyMode) {
     }
   }
 
+  // ─── Ollama API Migration ──────────────────────────────────────
+  // Fix existing configs where ollama has api:"openai-completions" instead of
+  // api:"ollama". Without this, ollama requests route through the previous
+  // provider's HTTP client in the fallback chain.
+  // See: https://github.com/openclaw/openclaw/issues/45369
+  try {
+    const ollamaProvider = merged.models?.providers?.ollama;
+    if (ollamaProvider && ollamaProvider.api === 'openai-completions') {
+      ollamaProvider.api = 'ollama';
+      // Remove model-level api:"openai-completions" (inherit from provider)
+      if (Array.isArray(ollamaProvider.models)) {
+        for (const m of ollamaProvider.models) {
+          if (m.api === 'openai-completions') delete m.api;
+        }
+      }
+      writeFileSync(configPath, JSON.stringify(merged, null, 2) + '\n');
+      console.log('  ✅ Ollama API type migrated: "openai-completions" → "ollama"');
+    }
+  } catch (e) {
+    console.log(`  ⚠️  Ollama migration check failed (not fatal): ${e.message}`);
+  }
+
   // Test gateway if requested
   if (testMode) {
     const testKey = apiKey || merged.models?.providers?.['mor-gateway']?.apiKey;
