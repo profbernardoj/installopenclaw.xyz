@@ -2,6 +2,19 @@
 
 All notable changes to EverClaw are documented here.
 
+## [2026.3.22] - 2026-03-16
+
+### Security
+- **everclaw-wallet.mjs (Stage 2)**: Fix private key leak in `cmdSetup` — capture `keychainStore` return, fallback to encrypted file, banner shows actual backend
+- **everclaw-wallet.mjs (Stage 3)**: Add simulation + rich confirmation to `cmdSwap` — shows amount in, expected out, min after slippage
+- **everclaw-wallet.mjs (Stage 4)**: Add simulation + unlimited approval warning to `cmdApprove` — CRITICAL WARNING for `maxUint256` approvals
+- **everclaw-wallet.mjs (Stage 5)**: Double confirmation for `export-key` — "YES I UNDERSTAND" exact match + 5-second countdown + Ctrl+C abort
+- **everclaw-wallet.mjs (Dry-run)**: `--dry-run` flag gates `writeContract` calls in cmdSwap and cmdApprove; simulation + confirmation still execute
+
+### Process
+- Phase 2 Stages 2–5 + dry-run — audited by Claude 4.6, tested 7/7 PASS, PII scan PASS
+- `isUnlimited` fix: uses `!amountStr` (not `=== "unlimited"` which would crash `parseEther`)
+
 ## [2026.3.21] - 2026-03-16
 
 ### Security
