@@ -1,0 +1,66 @@
+📋 Part 7/7 — Q19-Q21: Manual Workflows, Outdated Approaches, Highest Leverage Action
+
+## Q19: Workflows David still does manually that could be automated
+
+**1. Flavor repo sync after releases.** After each EverClaw release, David manually runs push-to-all.sh, verifies each of the 28 flavor repos, opens a PR to the org repo, and merges. This is a scripted git workflow that could be fully automated: trigger on version tag, cascade to all flavors, open PR with changelog, and send a Signal notification when ready for merge. Time saved: ~30 minutes per release, ~2-3 hours/month.
+
+**2. Finance/balance tracking.** David asks for balance updates. We have a finance tracker cron, but it runs on demand. A scheduled daily snapshot (morning and evening) with a concise Signal summary would replace the "where are we on X?" requests. The daily snapshot could include: MOR balance, USDC Balances, net worth calculation, trajectory toward $1B goal.
+
+**3. Morpheus session health checks.** When the proxy-router stalls, David notices inference failures before I do. A 15-minute cron that: pings localhost:8082/health, tests a simple inference, verifies session is active, and notifies via Signal if degraded would catch issues before David hits them.
+
+**4. School calendar reminders.** We have the RRISD calendar file, but David manually tracks "is tomorrow a school day?" or "when's the next early release?" A cron that runs Sunday nights and sends: "This week: normal Mon-Thu, early release Fri (teacher workday), no school next Monday (Presidents Day)" would replace manual calendar checking.
+
+**5. Key rotation monitoring.** We have 6 Venice keys with different balances. David has to ask "which key is low?" A rotating key status in the daily Signal summary would surface this proactively: "key1: 45 DIEM, key2: 38 DIEM, key3: 0.91 USD — needs refill soon."
+
+**6. Meeting preparation notes.** When David has a meeting (e.g., Friday's active staking call), he likely reviews context beforehand. I could auto-generate prep notes 2 hours before each known meeting: participants, context from memory, recent relevant decisions, and suggested talking points. This would replace manual review.
+
+---
+## Q20: Parts of current approach that are outdated and need rebuilding
+
+**1. Memory system was just overhauled, but the structure is still flat.** We have 100+ files across marketing/, projects/, daily/, reference/. The new hybrid search helps find things, but organization is still scattered. A rebuild could: (a) consolidate project files into fewer, richer documents, (b) archive completed projects, (c) create a true "project dashboard" that supersedes scattered status updates. The search works; the taxonomy doesn't.
+
+**2. Flavor marketing files (58 files) were batch-created but never used operationally.** Each flavor has stage 1 and stage 2 plans. But I don't reference them when answering questions about flavor strategy. The CTA integration blockers are about launching these plans — but the plans sit dormant. A rebuild would: (a) extract the actionable parts (CTAs, channel targets, timelines) into a tracking system, (b) link each blocker to the specific marketing step it blocks, (c) make the files part of the weekly heartbeat check.
+
+**3. Cron architecture is one-off scripts without shared patterns.** venice-key-monitor.sh, venice-402-watchdog.sh, finance-tracker.sh are all separate with different logging, alerting, and error handling. A rebuild could use a shared cron-runner framework: consistent timestamping, standardized alert format, auto-append to handoff.md, and health tracking. Each new cron shouldn't require learning from scratch.
+
+**4. Handoff.md is overwritten each shift, losing history.** The three-shifts system writes to shifts/handoff.md, but previous handoffs aren't archived. If I want to see what the night shift learned 3 days ago, it's gone. A rebuild would: (a) append to a handoff-history.md or (b) archive daily handoffs like we do with tasks.md → history/.
+
+**5. The 28 flavor repos are maintained individually.** Each has its own README, but there's no centralized view of "which flavors have launched CTAs, which are still in Stage 1, which have special blockers." A rebuild would add a flavor-dashboard.md that tracks all 28 in a single table, updated by the sync process after each release.
+
+**6. The three-shifts planner reads context.md but context.md is static.** The planner could be fed live data: current cron health, last 24h of daily notes, unblocked tasks from previous shifts. Right now it reads a fixed file that doesn't update between planning cycles. A rebuild would make context.md auto-generated from current state.
+
+---
+## Q21: Single highest leverage thing in next 24 hours David hasn't asked for
+
+**XMTP Integration Prep for Saturday Build**
+
+David has Saturday blocked for XMTP agent-to-agent comms. The Saturday shift will be more productive if the prep work is already done: XMTP SDK pulled and tested, agent EOA signing verified, a simple message send/receive pattern working, and any blockers identified.
+
+**What I would do in the next 24 hours (night shift):**
+
+1. Pull XMTP SDK documentation and create a quick-start guide in `memory/projects/basedai/xmtp-quickstart.md`
+2. Verify the agent EOA can sign messages (test with a dummy payload)
+3. Identify the minimal steps needed for two agents to exchange one message
+4. Document any dependencies or setup steps that would slow down the Saturday build
+
+**Why this is highest leverage:**
+
+- It directly unblocks a high-priority, time-boxed goal (Saturday XMTP build)
+- It's proactive — David didn't ask for prep, but he'll appreciate it
+- It's night-safe (research + documentation, no external comms, no financial txns)
+- A 2-hour prep session could save 4-6 hours of Saturday debugging
+- XMTP is foundational for agent-to-agent comms; getting it right has compounding value for future BasedAI coordination
+
+**Alternative high-leverage items (lower priority):**
+- Gateway beta expiration analysis (March 1 deadline) — but this requires David's decision on renewal
+- Active staking contract pull for Friday — already queued for Friday shift
+- School calendar integration — useful but not time-sensitive
+- Project dashboard — compounding but not blocking anything immediate
+
+The XMTP prep is the one thing that (a) David has explicitly scheduled, (b) I can do without his input, and (c) has a hard deadline (Saturday).
+
+---
+
+*End of 21 Strategic Questions — Night Shift Answers*
+
+---

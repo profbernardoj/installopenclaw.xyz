@@ -1,0 +1,63 @@
+📋 Part 5/7 — Q13-Q15: Research Priorities, Assumption Gaps, Underutilized Data
+
+## Q14: Where filling gaps with assumptions instead of flagging them
+
+**1. Family composition is stale.** USER.md lists 6 family members plus Daniel (Oct 2024), and mentions Andrew as "expected 2026 (IVF)." I don't know if Andrew has arrived, if Daniel's care schedule has changed, or if other family dynamics affect David's availability. I should flag "Need to verify current family composition" rather than operating on outdated data. Guardrail: When family is mentioned in a file, check the file's last-updated date and flag if >3 months.
+
+**2. $1B goal mechanics are unsupported by analysis.** I've cited $31.1M → $1B in 54 days multiple times. That's 30x in 8 weeks. I don't have: catalyst probability weights, required MOR price appreciation, De-SPAC deal terms, or downside scenarios. I'm treating it as a fixed target when I should flag it as "needs rigorous trajectory analysis with scenarios." Flag: The goal is motivational, not analytical, and should not drive recommendations without scenario work.
+
+**3. TabHR partnership value is unverified.** I suggested reaching out to Ryan Condron with the flavor-persona connection. But I don't know: Is Ryan actively seeking partners? What's his timeline? Does TabHR compete with or complement EverClaw? I'm assuming alignment when I should flag "Discuss TabHR outreach with David before any contact" to avoid overstepping relationship boundaries.
+
+**4. Gateway beta expiration decision is unclear.** I know the Morpheus API Gateway beta expires March 1 (6 days). I've recommended creating a transition plan. But I don't know David's preference: renew, migrate to node-only, add fallback providers, or let it lapse? I'm assuming he wants options when he may have already decided. Flag: Ask David explicitly about Gateway beta intent before investing effort in migration analysis.
+
+**5. BasedAI De-SPAC terms are unknown.** The $1B goal is tied to De-SPAC. I don't have: deal structure, timeline certainty, lockup periods, conversion ratios, or downside protection. I'm assuming De-SPAC is the primary wealth driver when there could be structuring I'm not aware of. Flag: Request De-SPAC deal context if relevant to planning; don't assume it's a straightforward multiplier.
+
+---
+## Q15: Most valuable underutilized data/pattern in memory files
+
+**1. Marketing files (58 files in memory/marketing/).** These contain stage 1 and stage 2 plans for all 28 flavors — specific messaging, target personas, launch CTAs, and channel strategies. But I haven't referenced them when answering questions about flavor strategy or CTA integration. The 4 CTA blockers are about launching these marketing flows, but I don't cite what the CTAs should say or which channels they target. If I did, the blockers would have more context.
+
+**How to use:** Before any strategy answer mentioning flavors, open the relevant marketing file and quote the specific plan. Example: "ClawClaw Stage 2 calls for Telegram community + X demo thread, but is blocked on voice integration research (see memory/marketing/clawclaw-stage2.md)."
+
+**2. School calendar (memory/reference/school-calendar-rrisd-2025-2026.md).** This has 180+ days of RRISD events (holidays, early release, testing windows). I mentioned integrating it with cron/FamilyClaw, but I haven't actually parsed it for upcoming events. Next week could have early release, teacher workday, or testing that affects David's schedule — and I wouldn't know without reading it.
+
+**How to use:** Night shift should parse the calendar for the next 7-14 days every Sunday. Flag any non-standard days (early release, holiday, event) in handoff.md for the week.
+
+**3. Key people file (memory/reference/key-people.md).** I referenced Thomas, Eric, Andy, Ryan in my answers without reading their full context. This file contains relationship history, contact preferences, and project involvement. Using it would make answers more precise: "Thomas (Morpheus maintainer, weekly sync, prefers Signal)" vs. just "Thomas."
+
+**How to use:** Before any strategy answer mentioning a person, check key-people.md for context. If the person isn't there, add them as a "Need to add" flag.
+
+**4. Lessons learned (memory/reference/lessons-learned.md).** The Q12 guardrails I wrote may duplicate or miss patterns already documented here. I didn't read it before writing, so I'm potentially reinventing documentation that already exists — or missing patterns that should be reinforced.
+
+**How to use:** Before writing any "process improvement" or "guardrails" section, read lessons-learned.md to build on existing patterns rather than creating duplicates.
+
+**5. Morpheus economics files (memory/projects/morpheus/).** We have detailed MOR economics, provider competition, session patterns, and staking research. But when answering about active staking and $1B goal, I didn't reference price history, reward curves, or the provider landscape. Those would make Friday's smart contract research sharper.
+
+**How to use:** Before any answer involving MOR economics or staking, pull from memory/projects/morpheus/ for hard data on reward schedules, provider concentrations, and price history rather than speaking in generalities.
+
+---
+## Q16: Score 1-10 on modeling David's priorities + specific fixes
+
+**Score: 7/10**
+
+**What I model well:**
+- Project inventory and status (EverClaw, flavors, ClawBox, Morpheus infra)
+- Technical stack details (fallback chain, providers, key rotation)
+- Communication preferences (Signal, structured wishes, concise answers)
+- Decision patterns (ship-first for pre-approved, research-then-recommend for new initiatives)
+- Strategic direction ($1B goal, BasedAI De-SPAC, agent stack)
+
+**What I'm missing:**
+1. **Family constraints aren't operationalized.** I know there are 6+ family members, school calendar exists, and evening productive window — but I don't check the calendar before scheduling or flagging tasks. I've never said "This is a school holiday, David may be busy with kids." The family context is present but dormant.
+
+2. **Energy and capacity signals.** I don't track David's message frequency, response times, or session length. I can't distinguish "David is focused on a big project" from "David is overwhelmed" from "David is traveling." A simple capacity tracker would help me throttle or accelerate proactive work.
+
+3. **Urgency vs importance distinction.** I treat $1B in 54 days as urgent without knowing if David wants daily tracking or if it's a background motivation. I should have asked: "Do you want daily balance updates or weekly summaries with scenario analysis?"
+
+**Specific fixes to reach 9/10:**
+1. Parse school calendar weekly and flag next 7 days in handoff.md
+2. Track David's message timestamps for 2 weeks to calibrate actual productive windows
+3. Ask explicit calibration question: "For each active project, do you want: (a) proactive updates, (b) ask-first, (c) only-on-request?"
+4. Add a `memory/capacity.md` that tracks: last session length, last proactive message, current energy signal (inferred from message cadence)
+
+---

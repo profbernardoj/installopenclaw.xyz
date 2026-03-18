@@ -1,0 +1,85 @@
+📋 Part 4/7 — Q10-Q12: Generic Output, Compounding System, Repeated Errors
+
+## Q10: Where defaulting to generic output when specific/tailored is possible
+
+**1. Strategic question answers — these 21 questions.** The answers above cite specific files, dates, projects, and people. But I could have written generic "you need better time management" style advice. The difference is that I actually searched memory files before writing. The risk: on faster pacing (day shift, real-time requests), I might skip the search and give generic advice. Guardrail: always open and quote at least one file when answering strategy questions.
+
+**2. Project status updates.** When David asks "where are we on X", I tend to summarize from memory. Example: "The 28 flavors are mostly done" vs "27/28 flavors have Stage 2 marketing, ClawClaw is blocked on voice integration research." The specific version requires looking up the tracking file. The generic version is faster but less useful. Guardrail: never give a status without a number or explicit blocker.
+
+**3. Cron job failure explanations.** When the 402 watchdog false-positived, I could have said "the script has a bug" (generic) vs "the log scanner reads old entries from previous runs because --since only filters new entries if the log file is rotated, which it isn't on this system" (specific). The specific version required reading the script. The generic version would have led to a less precise fix.
+
+**4. Memory file summaries.** I often say "check MEMORY.md for details" rather than extracting the specific relevant section. For someone who wants the answer now, that's not helpful. Better: quote the 2-3 lines that matter, then link the source. Guardrail: provide the specific excerpt first, link second.
+
+**5. Meeting prep and follow-ups.** "David has a meeting about X" vs "David's Friday active staking meeting with TBD requires: (1) contract source from BaseScan, (2) current Builder reward flow analysis, (3) 3 proposed modification approaches with tradeoffs." The second requires actual prep work. The first is just awareness. Guardrail: any meeting mentioned should have an associated prep checklist, even if minimal.
+
+---
+## Q11: One compounding system to build that makes every future task faster
+
+**Project Status Dashboard with Auto-Update**
+
+The highest-leverage system is a single, structured file that represents "current project state" across all active projects. This would replace the current scattered knowledge across MEMORY.md, daily files, project-specific files, and shifts/tasks.md.
+
+**Why this compounds:**
+
+- Every session starts with "what's current?" — currently takes 5-7 minutes of reading. A dashboard reduces this to 30 seconds.
+- Every status update, blocker, and decision is in one place. No more searching daily files for "what did David say about TabHR?"
+- The three-shifts planner can read this file instead of reconstructing context from scratch each cycle.
+- Crons can append to it (finance tracker adds balance, key monitor adds alerts), making it a living document.
+- XMTP agent-to-agent comms (Saturday's build) can query this file to share status with other agents.
+
+**Structure:**
+
+```markdown
+# Project Dashboard — Updated YYYY-MM-DD HH:MM
+
+## Active Projects (ordered by priority)
+### EverClaw
+- Status: v2026.2.23 released, CTA integration blocked
+- Blockers: Andy (web URL), Eric (affiliate URL), Lovable (CTA access)
+- Next: Mobile app decision from David
+
+### XMTP Agent Comms
+- Status: Research queued, build Saturday Feb 28
+- Blockers: None
+- Next: Pull XMTP SDK docs, test signing with agent EOA
+
+[... more projects]
+
+## Recent Decisions (last 7 days)
+- 2026-02-22: Capacitor approved for mobile MVP (over React Native)
+- 2026-02-22: TabHR flagged as potential partner
+- 2026-02-21: Three-shifts v2 deployed
+
+## Numbers
+- $31.1M current → $1B target (54 days remaining)
+- 31 active crons (13 healthy, 1 warning)
+- 28/28 flavor repos in sync
+
+## Alerts
+- key3: 0.91 USD remaining (low)
+- Gateway beta: 6 days remaining
+```
+
+**Implementation:**
+
+- Create `memory/dashboard.md` with the above structure
+- Night shift updates it every cycle (add recent decisions, refresh numbers)
+- Crons append alerts
+- Session startup reads this file first
+
+**Time savings:** ~5 minutes per session × 10 sessions/day × 365 days = ~300 hours/year. Plus reduced context-switching errors.
+
+---
+## Q13: What to research/prototype based on ecosystem direction
+
+**1. ERC-8004 Agent Identity Metadata Schema.** The Identity Registry is deployed on Base. We have an agent EOA and Safe. But registration requires a metadata schema (what goes in the NFT URI?). Need to research: What do reputable agents include in their metadata? Name, capabilities, API endpoints, reputation pointers? Prototype: generate the metadata JSON, estimate gas costs, and create a ready-to-execute registration transaction for David's approval.
+
+**2. XMTP + Morpheus Inference Handoff.** Saturday's XMTP build enables agent-to-agent messaging. But when Agent A asks Agent B for analysis, who pays for inference? Does Agent B use its own Morpheus session? Does Agent A include an x402 payment? Prototype: Create a two-agent conversation where Agent A sends a query, Agent B responds using Morpheus, and we track who paid for what.
+
+**3. Active Staking Contract Modification (Friday Prep).** David wants Builders to consume inference for rewards. Need to pull verified contract source from BaseScan (Diamond proxy pattern), map the current reward emission flow, and prototype 3 modification approaches: (a) require inference receipt hash in claim, (b) weight rewards by verified inference, (c) optional delegation to inference consumers. Deliverable: contract diff with tradeoffs.
+
+**4. Agent Wallet Abstraction for Mobile Users.** Current setup: EOA + Safe. Mobile users won't manage private keys. Need research: ERC-4337 account abstraction, social recovery options, spending limits, and how to present this in the EverClaw mobile app. Prototype: document the integration path from current EOA/Safe to a user-friendly AA wallet that mobile users can safely delegate.
+
+**5. Flavor-Specific Cron Template System.** Three-shifts works for main session. But each of 28 flavors has different scheduled needs (FamilyClaw: school calendar; InvestClaw: portfolio snapshots; VCIClaw: deal flow checks). Prototype: create a cron-template generator that takes a persona type and outputs appropriate scheduled tasks with HEARTBEAT.md integration.
+
+---

@@ -1,0 +1,51 @@
+📋 Part 2/7 — Q4-Q6: Skills to Develop, Context Loss, Project Connections
+
+## Q4: Skills/capabilities to develop based on where projects are heading
+
+**1. XMTP Protocol Integration.** Saturday's agent-to-agent comms build requires deep XMTP knowledge. We have the spec in memory/projects/basedai/agent-comms-spec.md but haven't built anything with it yet. Need: working XMTP client, message signing with agent EOA, conversation management, integration with ERC-8004 discovery. This is a flagship capability for BasedAI team coordination.
+
+**2. Mobile App Development (Capacitor/React Native).** The mobile app research is done, but building it requires new skills. Capacitor is the recommended path, but we haven't touched mobile deployment pipelines (App Store Connect, Google Play Console, TestFlight, signing certificates). Need: Capacitor project scaffolding, push notification setup (APNs/FCM), build automation, store submission workflow.
+
+**3. Smart Contract Analysis & Modification.** Friday's active staking research requires reading Solidity, understanding Diamond proxy patterns, and proposing modifications to reward distribution. We have the contract addresses but haven't pulled the source. Need: Verified contract source from BaseScan, understanding of current Builder reward emission, analysis of inference consumption verification hooks.
+
+**4. x402 Payment Protocol Mastery.** We made one x402 payment successfully, but haven't built reusable patterns. Need: A library of x402-ready API endpoints (not just CoinGecko), automatic budget tracking per-endpoint, error handling for insufficient USDC, and integration with agent workflows (research → pay → receive result).
+
+**5. Agent Self-Registration (ERC-8004).** The Identity Registry exists on Base. We have the agent EOA. We haven't registered. Need: Metadata schema for agent identity (what goes in the NFT URI?), reputation tracking integration, and a pattern for other agents to discover ours. This is foundational for agent-to-agent trust.
+
+---
+## Q5: Context being lost between sessions that needs fixes
+
+**1. Cross-session project status isn't captured systematically.** Each session picks up from MEMORY.md + daily files, but there's no "current project status" snapshot. Example: the 28 flavor websites are all live, but 4 CTA integration tracks are blocked — this was buried in a daily file rather than tracked prominently. Result: have to rediscover blockers each session.
+
+**Fix:** Add "Active Blocked Items" section to MEMORY.md with explicit owner/timeline for each blocker. Or create `memory/projects/active-blockers.md` that the session reads automatically.
+
+**2. Cron job outputs don't surface to main session.** The venice-key-monitor, venice-402-watchdog, and finance-tracker all run on schedules. Their outputs go to log files or memory/Finance.md. But when a key drops or a payment fails, there's no proactive signal to the main session. Result: key3 ran dry and wasn't noticed until the 402 watchdog caught it.
+
+**Fix:** Cron jobs should append to a `memory/cron-alerts.md` that HEARTBEAT.md checks. Or use session_send to the main session when critical thresholds are crossed.
+
+**3. Meeting notes are scattered.** David shared context from Morpheus maintainers meetings, BasedAI discussions, IronHill negotiations — but these live in daily files, not in structured project memory. When David asks "what did Thomas say about X", finding it requires searching through unstructured daily logs.
+
+**Fix:** After each meeting mentioned, create a structured `memory/meetings/YYYY-MM-DD-meeting-topic.md` with attendees, decisions, action items. Reference from project files.
+
+**4. Codebase changes between sessions lose context.** Session A modifies openclaw.json or a script. Session B doesn't know about it. The git diff shows the change, but there's no "why" attached. Result: can't tell if a setting is intentional or abandoned experiment.
+
+**Fix:** Any non-trivial config change should be logged in `memory/config-changelog.md` with date, reason, and expected impact. This already exists for some items but isn't systematic.
+
+**5. Pain points are forgotten after they're "solved".** Lessons-learned.md exists, but it only captures technical gotchas. The pattern of "David had to remind me X three times" doesn't get recorded. Result: same friction repeats.
+
+**Fix:** After each weekly review, capture 1-2 process friction points in `memory/reference/process-lessons.md` with the behavioral change needed.
+
+---
+## Q6: Connections between projects/ideas David hasn't made yet
+
+**1. EverClaw Flavors → TabHR Partnership.** David flagged TabHR (Ryan Condron's "Virtual Employees" platform) as a potential partner. TabHR handles persona/UI/channels, EverClaw handles inference. But the 28 flavors are already segmented by persona (FamilyClaw, VCIClaw, InvestClaw, etc.). The flavors map directly to TabHR's virtual employee archetypes. This isn't a partnership — it's a product integration opportunity. Suggest: reach out to Ryan with "EverClaw flavors already cover 28 virtual employee types — we can power the backend."
+
+**2. $1B Goal → ERC-8004 Agent Reputation.** David's public net worth goal ($1B by April 18) ties to BasedAI De-SPAC and MOR appreciation. But ERC-8004 Reputation Registry could become a credible signal for agent quality. If David's agent has a high on-chain reputation score, that's a public, verifiable metric that supports the "David + AI = 10x engineer" narrative. The registry is already deployed. We just need to register and let reputation accumulate.
+
+**3. Morpheus Active Staking → MOR Demand Pressure → $1B Goal.** David wants to modify Builder rewards to require inference consumption. If this ships, every MOR holder who wants rewards must either consume inference or sell to someone who does. This creates genuine demand. The smart contract work David queued for Friday isn't just technical — it's a lever for MOR price appreciation, which directly impacts the $1B goal. The connection isn't explicit in the memory files.
+
+**4. Three-Shifts Cron System → Cron as a Service for Flavors.** We built a sophisticated cron system (planning → approval → execution). Each of the 28 flavor sites is supposed to be an "agent for X persona." What if each flavor had its own cron schedule? FamilyClaw could run a school calendar check. InvestClaw could run portfolio snapshots. The three-shifts skill could become a Cron-as-a-Service feature for all flavors.
+
+**5. x402 Success → Agent Economy Protocol Stack.** We proved x402 for CoinGecko pricing works. The agent now has: EOA, Safe, USDC, and a successful payment. We have: Morpheus (inference), XMTP (comms), ERC-8004 (identity), x402 (payments). These are components of a stack that every AI agent will need. David positioned EverClaw as "own your inference." The broader positioning is "own your agent stack." This is the BasedAI thesis, but we haven't connected the dots publicly.
+
+---

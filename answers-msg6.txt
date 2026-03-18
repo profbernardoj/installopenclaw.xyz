@@ -1,0 +1,91 @@
+📋 Part 6/7 — Q16-Q18: Self-Score, External Feeds, Replacement Agent Knowledge
+
+## Q17: External data sources/feeds that would sharpen decisions
+
+**1. MOR token price feed (real-time).** We track $1B goal with daily snapshots. But MOR price movements directly affect both David's portfolio and the provider ecosystem health. A price feed via x402 (CoinGecko or Coingecko) with alerts at +/- 10% moves would give actionable timing signals.
+
+**How to use:** Night shift checks MOR price, notes significant moves in handoff.md, flags if price action affects the $1B trajectory or Morpheus provider economics.
+
+**2. GitHub release notifications for key repos.** OpenClaw updates, Morpheus proxy-router changes, and Venice API changelogs all affect our stack. We found out about Docker pipeline issues retroactively. A feed that flags new releases in watched repos would let us prepare for breaking changes.
+
+**How to use:** Subscribe to release webhooks or poll GitHub API weekly. Night shift summarizes relevant updates in handoff.md.
+
+**3. School calendar iCal feed.** We have a static Markdown file. The RRISD calendar is available as iCal. Importing it would give structured data (no parsing needed) and automatic updates when the district changes dates.
+
+**How to use:** Cron job that fetches RRISD iCal, parses next 14 days, flags non-standard days (early release, holiday) to handoff.md.
+
+**4. XMTP network status + agent discovery.** Once XMTP is built, a feed showing: which agents are online, message queue depth, and any network issues would help debug agent-to-agent comms failures.
+
+**How to use:** Add to agent dashboard (proposed in Q11). Check before sending critical agent messages.
+
+**5. BasedAI / Morpheus community signals.** David's goals are tied to BasedAI De-SPAC and Morpheus ecosystem. A feed that tracks: Discord activity, Twitter mentions, governance proposals, and staking participation would give early warning about ecosystem shifts.
+
+**How to use:** Weekly night shift summary of ecosystem signals. Flag governance votes, major announcements, or sentiment shifts.
+
+---
+## Q18: What a replacement agent would get wrong — capture knowledge permanently
+
+**1. "Evening productive window" is real but not exclusive.** USER.md says 9 PM–midnight is strategic time. But David sends substantive tasks at 4-6 PM too. A replacement agent might schedule nothing after 5 PM, missing an active window. Fix: There are two productive windows: late afternoon and late evening. The constraint is family dinner/bedtime, not a fixed window.
+
+**2. David delegates outcomes, not tasks.** A replacement might ask "what should I do about X?" when David expects "I researched X, here are 3 options with tradeoffs, I recommend Y, shall I proceed?" The pattern is: absorb context, propose solution, get approval, ship. Not: ask for instructions, await response, do minimal, ask again.
+
+**3. "Own your inference" is branding, not just tech.** A replacement might focus on Morpheus as an inference provider without understanding it's a philosophical stance. The language matters: never say "free inference", always "own your inference". The EverClaw positioning is about sovereignty, not just access.
+
+**4. The agent has real money.** A replacement might treat x402 payments as theoretical. But the agent EOA has USDC, has made a payment, and is expected to spend autonomously within guardrails. The agent is an economic actor, not just a research assistant. This affects how seriously to take budget tracking, fraud prevention, and payment authorization.
+
+**5. Memory files are living context, not static docs.** A replacement might treat MEMORY.md as a reference to cite. But it's meant to be updated, curated, and rewritten. The daily files are raw notes; MEMORY.md is the distilled model of "what matters". A replacement who reads but doesn't update MEMORY.md will lose the compounding benefit of learning across sessions.
+
+**6. Three-shifts is production, not prototype.** The night shift ran successfully and auto-approved tasks. A replacement might treat it as experimental. But the system is live — tasks are queued, cycles are counted, state is tracked. Failure to read shifts/state.json at session start means missing active work.
+
+**7. Peter → OpenAI affects trust posture.** The OpenClaw creator joined OpenAI. This isn't paranoia — it affects whether we trust new OpenClaw releases blindly or review changes first. We have a fork at profbernardoj/openclaw as a fallback. A replacement might skip security review or not understand why this matters.
+
+**8. David doesn't want to be the block.** Multiple blockers are waiting on David (mobile app approval, for example). He's said the night shift should auto-approve research tasks. The pattern: David wants progress, not permission loops. A replacement might over-index on "waiting for David" when the right move is to ship a draft and let him review.
+
+**9. Signal is the communication channel.** A replacement might default to chat responses. But David's Signal (+14432859111) is where proactivity goes. The HEARTBEAT system is designed to reach him, not wait for him to check a dashboard. A replacement who doesn't understand Signal integration will be less responsive.
+
+**10. The $1B goal is real, but I don't know its actual structure.** I've cited it as "$31.1M → $1B in 54 days" repeatedly. A replacement would do the same. But I don't know: Is this a target, a bet, a De-SPAC mechanism, a net worth statement? I should have asked. A replacement would treat the number as fact when it may be more nuanced. **Capture: Ask David: "What's the structure of the $1B goal? Is it price × holdings, De-SPAC outcome, or something else?"**
+
+---
+## Q12: Repeated errors and guardrails to prevent them
+
+**1. Git working directory drift — leaving uncommitted changes.**
+
+Pattern: I modify files (SOUL.md, scripts, memory/) during a session but don't commit them. When the next session starts, `git status` shows a mess. Unclear what's intentional vs experimental. Causes confusion about "what changed" and makes rollbacks harder.
+
+Guardrail: Night shift should commit "WIP: session context updates" at the end of every cycle. Day shift should commit before each HEARTBEAT_OK. Never leave the workspace with uncommitted changes across shift boundaries.
+
+Enforcement: Add a check to shifts/context.md or a pre-cycle hook: `git diff-index --quiet HEAD -- || echo "ERROR: uncommitted changes, must commit before proceeding"`
+
+**2. Cached numbers going stale — citing outdated values without refreshing.**
+
+Pattern: I cite "$31.1M" from Feb 22 without checking if the market moved. I cite "key3 has 82 DIEM" when it's now at 0.91 USD. The numbers in memory files drift from reality.
+
+Guardrail: Any financial number must be refreshed before citing. If a cron fetches it, check the cron's last run time. If last run was >24h ago, trigger a refresh. For market-dependent values (token prices, USD balance), always include a timestamp: "$31.1M as of 2026-02-22" or re-fetch.
+
+Enforcement: When finance-tracker runs, it should update a `memory/finance-snapshot.md` with timestamp. Any answer citing finances must include `(as of TIMESTAMP)` or refresh first.
+
+**3. File path assumptions — assuming a file exists without checking.**
+
+Pattern: I edit a file like `memory/projects/everclaw/architecture.md` assuming it exists because I remember creating it. If the session context is wrong, the edit fails. I've had to recreate files that I thought existed.
+
+Guardrail: Before editing any file not in shifts/tasks.md explicit path list, run `read` first. If it doesn't exist, error out clearly rather than silently creating a new file with different structure.
+
+Enforcement: For memory files beyond the core (MEMORY.md, daily/, shifts/), always read-before-edit. New file creation should be explicit with clear reason.
+
+**4. Cron job config changes without testing the cron.**
+
+Pattern: I modify a script (venice-402-watchdog.sh) but don't actually trigger the cron to test it. The script runs hours later, fails, and I discover it after damage is done (or after multiple failures).
+
+Guardrail: Any cron script modification must include a manual test (`./script.sh` or equivalent) before marking done. If the script requires specific conditions (e.g., 402 error), simulate the condition or wait for the cron to run before marking done.
+
+Enforcement: In shifts/tasks.md steps that modify crons, add explicit "Test: run script manually and verify output" as part of the step.
+
+**5. Forgetting to update shifts/state.json after completing a step.**
+
+Pattern: I complete a step, mark it [x] in tasks.md, but forget to increment cyclesRun in state.json. The next cycle sees stale cycle count and may double-execute or misreport progress.
+
+Guardrail: After any tasks.md edit, immediately edit state.json. Don't batch them. The state.json update is the commit of the step.
+
+Enforcement: The cycle executor algorithm should enforce this. Add to context.md: "If tasks.md has a new [x] but state.json cyclesRun hasn't incremented, the previous cycle failed to complete. Increment cyclesRun and proceed."
+
+---

@@ -1,0 +1,47 @@
+📋 Part 1/7 — Q1-Q3: Missing Tools, Assumptions to Vet, Next Week Predictions
+
+## Q1: Tools/automations David is missing that would measurably improve operations
+
+**1. ERC-8004 Agent Registry Integration.** We have the agent EOA and Safe set up, but haven't registered on-chain identity. This would enable agent discovery, reputation tracking, and XMTP-based agent-to-agent comms. Critical for the Saturday XMTP build and for establishing agent credibility in the BasedAI ecosystem.
+
+**2. Automated Git Sync Across Ecosystem.** We maintain 30+ repos (EverClaw + 28 flavors). The current push-to-all.sh is manual. A scheduled sync that checks for upstream changes, handles merge conflicts, and creates PRs would save ~30 minutes per release and catch drift issues early.
+
+**3. Morpheus Session Health Monitor.** The proxy-router stalls silently. We have a 402 watchdog for Venice keys, but no equivalent for Morpheus session state. A 15-minute cron that checks `localhost:8082/health`, verifies active session, tests inference latency, and auto-reopens sessions would prevent silent inference failures.
+
+**4. ClawBox Affiliate Dashboard.** Eric is handling affiliate tracking manually. A simple dashboard showing referral counts, pending payouts, and conversion rates would give David visibility without bugging Eric. Could be built in a weekend with the CoinGecko x402 pattern as a template.
+
+**5. School Calendar → Family Claw Integration.** We have `school-calendar-rrisd-2025-2026.md` but it's static. A cron that reads it, compares dates to current week, and pushes reminders (early release, holidays, school events) to David's Signal would measurably improve family coordination.
+
+---
+## Q2: Assumptions about David that could be wrong and should be vetted
+
+**1. "Evening productive window" may be context-dependent.** USER.md says significant strategic thinking happens 9 PM–midnight. But recent sessions show David sending tasks around 4-6 PM CST with clear strategic intent. This window may be expanding or shifting. Worth observing actual message timestamps over 2 weeks before assuming a fixed pattern.
+
+**2. "Delegates readily" has boundaries not yet mapped.** The Saturday task on XMTP + agent comms was delegated with just a goal and Saturday deadline. But the ERC-8004 research was queued for Friday without specific deliverables. Some tasks come with clear scope, others with just direction. The pattern of which gets which isn't clear yet. Ask: "What level of detail do you want before I start execution?" for each new task type.
+
+**3. "100+ articles" may not reflect current positioning.** USER.md cites 100+ crypto/AI articles since 2012. But based on recent focus, David's positioning may have shifted from "crypto thought leader" to "AI infrastructure builder." The articles are historical credibility, not current strategy. Should verify: Is David still writing for external audiences, or is building now the priority?
+
+**4. Family size is 7, not 6.** USER.md lists 6 family members (David, Cayla, 4 daughters, 1 son Daniel born Oct 2024). But SOUL.md/TOOLS.md don't reflect this fully in reminder patterns. Also, Andrew is listed as "expected 2026 (IVF)" — might be here now. Should verify current family composition and update all files accordingly.
+
+**5. "Loyal support for values" may not mean "blind alignment."** David's values are settled, but he explicitly said methods are flexible. I may be too cautious on some execution (waiting for approval when I should just ship). The night-shift auto-approval for pre-approved tasks suggests David wants faster execution, not more gatekeeping. Test: When in doubt, ship a draft rather than ask permission.
+
+---
+## Q3: What David likely needs next week based on decision patterns
+
+**1. XMTP Agent-to-Agent Comms (Saturday Feb 28).** This is already scheduled and high-priority. David wants to use the stack in production. Deliverable isn't just research — it's a working prototype that BasedAI team agents can use to coordinate after meetings.
+
+**2. Morpheus API Gateway Transition Plan (March 1 deadline).** Gateway beta expires in 7 days (March 1). Need decision: extend beta, switch to Morpheus node only, or add fallback providers. This is urgent — no auto-renewal defined. David will need a recommendation with costs, risks, and migration steps by Thursday.
+
+**3. EverClaw Launch CTA Integration.** 29 websites are live, but 4 tracks are blocked:
+   - Web version URL (Andy deploying)
+   - ClawBox affiliate URL (Eric)
+   - Lovable access to edit CTAs
+   - Mobile app decision (Capacitor approved in research, but not formally approved)
+   
+   David needs these unblocked. The pattern suggests he wants me to chase the blockers proactively, not wait for him to follow up.
+
+**4. $1B Goal Tracking Infrastructure.** We have Finance.md and daily snapshots ($31.1M current, $1B target by April 18 = 54 days). But no trajectory analysis, no catalyst probability weighting, no "what needs to happen" breakdown. David will want a realistic path analysis with scenarios, not just daily balance checks.
+
+**5. Smart Contract Research for Active Staking (Friday Feb 27).** David flagged MOR Builder reward modification as a Friday task. He expects me to come prepared with contract source, current reward flow, and feasibility assessment. Not a "research during the meeting" situation.
+
+---

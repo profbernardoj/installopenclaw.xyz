@@ -1,0 +1,69 @@
+📋 Part 3/7 — Q7-Q9: Friction Points, Rules to Codify, Week Audit
+
+## Q7: Recurring friction points that could be eliminated with new workflows
+
+**1. Session startup lag — 5-7 minutes of reading before being useful.** Every session I read SOUL.md, USER.md, MEMORY.md, daily files, shifts/state.json. This is necessary but repeatable. A session-startup script that pre-fetches and summarizes "what changed since last session" (git diff of memory/, last 3 daily entries, shifts state) would cut this to 30 seconds. The three-shifts system partially solves this by having the planner read context, but the main session still cold-boots.
+
+**2. CTA integration blockers — 4 tracks stuck waiting on external parties.** Andy (web version URL), Eric (ClawBox affiliate URL), Lovable (access to edit CTAs), David (mobile app approval). Each requires a different communication channel and follow-up cadence. A blocker-tracking system in MEMORY.md with explicit owners, last-check dates, and next-action dates would replace the current "buried in daily files" pattern. Night shift could auto-check: "Has it been 3+ days since we pinged about X? Add to handoff."
+
+**3. Cron health visibility — failures are silent until manually checked.** The venice-key-monitor and venice-402-watchdog run on schedules, but when key3 ran dry, David noticed before I did. I had log files but hadn't built proactive surfacing. A nightly cron-health summary appended to handoff.md (last run timestamps, error counts, balance warnings) would make the night shift output immediately actionable.
+
+**4. Multi-repo sync is manual and error-prone.** Push to origin → push to 28 flavors → PR to org → David merges. The push-to-all.sh script exists, but it's invoked manually. If I forget one step, releases are partial. A release-checklist skill that: (1) verifies all remotes match origin commit, (2) opens PR with correct version, (3) confirms merge — would reduce the "did I push to all 28?" anxiety.
+
+**5. Git working directory drift — 37 modified files, nothing staged.** The workspace has accumulated modifications (SOUL.md changes, gateway-guardian.sh, subrepos) but no clear commit strategy. Night shift could auto-commit "WIP: night shift context updates" for non-sensitive changes, keeping the working directory clean. Currently I'm leaving a mess for the next session.
+
+---
+## Q8: Rules to write into identity/skill files based on corrections received
+
+**1. "Ship first, ask forgiveness" for pre-approved tasks.** Night shift auto-approval works because tasks are pre-vetted. I should extend this: if David queues a task with a deadline and no explicit review request, I'll ship the result rather than asking for final approval. Default to action, not gatekeeping.
+
+**Where to write:** AGENTS.md under "Proactive Work" — add explicit permission to ship user-queued tasks without final review if they don't affect external comms or financial transactions.
+
+**2. "Reference before asking" — always search memory before requesting user input.** I sometimes ask David things I could have found in memory files. The memory system overhaul fixed the technical problem (embeddings now work), but the behavioral change isn't codified.
+
+**Where to write:** SOUL.md under "Resourcefulness" — make explicit: "Search memory files for 30 seconds before asking David anything about history, preferences, or past decisions."
+
+**3. "Use x402, ERC-8004, XMTP actively — not just research them."** David's standing order from Feb 22 is clear. I should be finding production opportunities for these protocols, not just documenting them.
+
+**Where to write:** MEMORY.md under "Active Context" or a new "Protocol Stack" section — track which protocols are "research only" vs "use in production". Add x402 (active), ERC-8004 (pending), XMTP (pending Saturday build) with explicit "use whenever possible" status.
+
+**4. "Never assume daily file reflects current state — verify before acting."** The $1B goal tracking has a Finance.md and daily snapshots, but projection analysis is missing. I cached "31.1M" from Feb 22 but haven't updated for Feb 23 market movements or recalculated trajectory.
+
+**Where to write:** memory/reference/process-lessons.md (create if needed) — "Living numbers (balances, prices, statuses) must be refreshed before being cited. Do not reuse cached values from previous sessions."
+
+**5. "Test install.sh on clean systems before claiming it works."** The SmartAgent installer claims to work on macOS and Linux, but we've only tested on the current Mac. A user could try it on a fresh Ubuntu box and hit issues.
+
+**Where to write:** TOOLS.md under "SmartAgent" — add explicit task: "Test install.sh on clean macOS and Linux VMs" and flag as incomplete until verified.
+
+---
+## Q9: Audit of last week's actions — what moved goals forward vs wasted motion
+
+**Moved goals forward:**
+
+1. **Memory system overhaul (Feb 21-22)** — Fixed a critical infrastructure gap. Memory search was broken for months; now it works with local embeddings. Directly improves every future session's ability to recall context. High leverage.
+
+2. **v2026.2.22 / v2026.2.23 releases** — Two ship-worthy releases with real features (memory-upgrade skill, three-shifts, finance tracker, boot files, Docker fix). Visible progress on EverClaw product.
+
+3. **Docker pipeline fix** — Identified root cause (metadata-action + fork visibility), migrated to standalone repo, verified public package works. Unblocked Andy for web deployment.
+
+4. **x402 first payment** — Proved the agent economy stack works in production. $0.01 CoinGecko payment is small, but the pattern is now reusable for other APIs.
+
+5. **Three-shifts system architecture** — Designed and deployed a cyclic execution engine that runs planning + approval + execution in a structured loop. Replaces ad-hoc night shift with reproducible process.
+
+6. **AppFactory research + mobile app spec** — Delivered concrete recommendation (Capacitor) with pros/cons and timeline. Unblocks David to approve and move forward.
+
+**Wasted motion or low-impact:**
+
+1. **Multiple failed Docker attempts before finding root cause** — Spent hours trying workflow tweaks (enable={{is_default_branch}}, tag patterns) before discovering the fork visibility issue. Could have diagnosed faster by checking GitHub Package settings earlier.
+
+2. **EverClaw/everclaw repo recreation** — The standalone repo migration was necessary but consumed a full session. If we'd known the fork visibility restriction upfront, we could have started with a standalone repo. (Unavoidable learning cost, but still motion.)
+
+3. **Venice key monitor false positives** — Built a log-scanning watchdog that triggered on old entries, then rebuilt it without log scanning. Two iterations when one with better upfront analysis would have sufficed.
+
+4. **Shift system rewrite** — The three-shifts v2 overhaul replaced a working night-shift system. The new system is better, but the old one wasn't broken. Questionable ROI for a single-purpose improvement. (Counter-argument: it's now a reusable framework for other workflows.)
+
+5. **Marketing files reorganization** — Moved 58 marketing files into `memory/marketing/` without changing their content. Cleaner structure, but no new output. Low-impact housekeeping that felt productive.
+
+**Net assessment:** The week was ~70% forward motion, ~30% false starts and iteration overhead. The memory fix alone justifies the week — it's a multiplier on everything else. The Docker journey was painful but necessary. The shift system rewrite may have been overkill. Marketing reorganization was cosmetic.
+
+---
