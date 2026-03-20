@@ -47,6 +47,14 @@ services:
       # - MORPHEUS_ROUTER_URL=http://host.docker.internal:8082
       # - ETH_NODE_ADDRESS=https://base-mainnet.public.blastapi.io
       # - WALLET_PRIVATE_KEY=  # Use Docker secrets in production!
+    # Container security hardening
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,size=64m
     volumes:
       # Persist config and workspace across restarts
       - ${OPENCLAW_HOME:-~/.openclaw}:/home/node/.openclaw

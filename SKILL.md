@@ -1,6 +1,6 @@
 ---
 name: everclaw
-version: 2026.3.31
+version: 2026.3.20.0335
 description: Open-source first AI inference — GLM-5 as default, Claude as fallback only. Own your inference forever via the Morpheus decentralized network. Stake MOR tokens, access GLM-5, GLM-4.7 Flash, Kimi K2.5, and 30+ models with persistent inference by recycling staked MOR. Open-source first model router routes all tiers to Morpheus by default — Claude only kicks in as an escape hatch when needed. Includes Morpheus API Gateway bootstrap for zero-config startup, OpenAI-compatible proxy with auto-session management, automatic retry with fresh sessions, OpenAI-compatible error classification to prevent cooldown cascades, multi-key auth rotation v2 with proactive DIEM balance monitoring and reactive 402 watchdog, Gateway Guardian v5 with direct curl inference probes (eliminates Signal spam), proactive Venice DIEM credit monitoring, circuit breaker for stuck sub-agents, nuclear self-healing restart, always-on proxy-router with launchd auto-restart, smart session archiver, three-shift cyclic execution engine (v2 with 15-minute execution loops), 24/7 always-on power configuration for macOS, bundled security skills, zero-dependency wallet management via macOS Keychain, x402 payment client for agent-to-agent USDC payments, ERC-8004 agent registry reader for discovering trustless agents on Base, and hardware-aware local Ollama fallback with auto model selection (Qwen3.5 family, 1.5B–72B based on available RAM/GPU).
 homepage: https://everclaw.com
 metadata:
@@ -60,7 +60,7 @@ metadata:
         - "~/.openclaw/logs/ — guardian logs"
     install:
       method: "git clone (recommended) or clawhub install everclaw-inference"
-      note: "curl | bash installer available but users should review scripts before executing. All scripts are open source at github.com/profbernardoj/everclaw."
+      note: "curl | bash installer available but users should review scripts before executing. All scripts are open source at github.com/EverClaw/EverClaw."
     tags: ["inference", "everclaw", "morpheus", "mor", "decentralized", "ai", "blockchain", "base", "persistent", "fallback", "guardian", "security", "three-shifts", "task-planning"]
 ---
 
@@ -190,13 +190,13 @@ Before installing EverClaw, ensure you have the following:
 Run this to verify your environment:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/profbernardoj/everclaw/main/scripts/install-with-deps.sh | bash -s -- --check-only
+curl -fsSL https://raw.githubusercontent.com/EverClaw/EverClaw/main/scripts/install-with-deps.sh | bash -s -- --check-only
 ```
 
 ### One-Line Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/profbernardoj/everclaw/main/scripts/install-with-deps.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EverClaw/EverClaw/main/scripts/install-with-deps.sh | bash
 ```
 
 This will:
@@ -215,7 +215,7 @@ If you don't have OpenClaw installed yet:
 curl -fsSL https://get.openclaw.ai | bash
 
 # Then install EverClaw
-curl -fsSL https://raw.githubusercontent.com/profbernardoj/everclaw/main/scripts/install-with-deps.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EverClaw/EverClaw/main/scripts/install-with-deps.sh | bash
 ```
 
 ---
@@ -309,7 +309,7 @@ The safe installer handles fresh installs, updates, and ClawHub collision detect
 
 ```bash
 # Fresh install
-curl -fsSL https://raw.githubusercontent.com/profbernardoj/everclaw/main/scripts/install-everclaw.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EverClaw/EverClaw/main/scripts/install-everclaw.sh | bash
 
 # Or if you already have the skill:
 bash skills/everclaw/scripts/install-everclaw.sh
@@ -321,7 +321,7 @@ bash skills/everclaw/scripts/install-everclaw.sh --check
 ### Option C: Manual Git Clone
 
 ```bash
-git clone https://github.com/profbernardoj/everclaw.git ~/.openclaw/workspace/skills/everclaw
+git clone https://github.com/EverClaw/EverClaw.git ~/.openclaw/workspace/skills/everclaw
 ```
 
 To update: `cd ~/.openclaw/workspace/skills/everclaw && git pull`

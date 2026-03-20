@@ -36,7 +36,7 @@ clawhub install everclaw-inference
 **Manual clone:**
 
 ```bash
-git clone https://github.com/profbernardoj/everclaw.git ~/.openclaw/workspace/skills/everclaw
+git clone https://github.com/EverClaw/EverClaw.git ~/.openclaw/workspace/skills/everclaw
 ```
 
 > ⚠️ **Use `everclaw-inference`** — not `everclaw`. The bare `everclaw` slug on ClawHub belongs to a different, unrelated product ("Everclaw Vault"). See [CLAWHUB_WARNING.md](CLAWHUB_WARNING.md).
@@ -279,7 +279,7 @@ When a session ends, your MOR comes back. Open a new session with the same token
 | **Setup (recommended)** | `node scripts/setup.mjs --key YOUR_KEY --apply --test --restart` |
 | Setup (dry-run) | `node scripts/setup.mjs` |
 | Install (ClawHub) | `clawhub install everclaw-inference` |
-| Install (script) | `curl -fsSL https://raw.githubusercontent.com/profbernardoj/everclaw/main/scripts/install-everclaw.sh \| bash` |
+| Install (script) | `curl -fsSL https://raw.githubusercontent.com/EverClaw/EverClaw/main/scripts/install-everclaw.sh \| bash` |
 | Update (ClawHub) | `clawhub update everclaw-inference` |
 | Update (git) | `cd skills/everclaw && git pull` |
 | Check version | `bash skills/everclaw/scripts/install-everclaw.sh --check` |
