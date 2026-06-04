@@ -69,17 +69,13 @@ RUN git clone --depth 1 --branch ${OPENCLAW_VERSION} https://github.com/openclaw
     rm -rf .git
 
 # Copy EverClaw skill into build context (monorepo: scripts/, SKILL.md, etc. at root)
-# Copy skill files needed for the OpenClaw integration
+# Copy skill files needed for the OpenClaw integration (only files tracked in git)
 COPY --chown=node:node scripts /everclaw-skill/scripts
 COPY --chown=node:node SKILL.md /everclaw-skill/SKILL.md
 COPY --chown=node:node AGENTS.md /everclaw-skill/AGENTS.md
-COPY --chown=node:node USER.md /everclaw-skill/USER.md
-COPY --chown=node:node SOUL.md /everclaw-skill/SOUL.md
-COPY --chown=node:node IDENTITY.md /everclaw-skill/IDENTITY.md
 COPY --chown=node:node BRAIN.md /everclaw-skill/BRAIN.md
 COPY --chown=node:node TOOLS.md /everclaw-skill/TOOLS.md
 COPY --chown=node:node VOICE.md /everclaw-skill/VOICE.md
-COPY --chown=node:node memory /everclaw-skill/memory
 COPY --chown=node:node skills /everclaw-skill/skills
 COPY --chown=node:node package.json /everclaw-skill/package.json
 COPY --chown=node:node config /everclaw-skill/config
